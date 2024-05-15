@@ -1,6 +1,6 @@
 package config
 
-import "os"
+
 
 type Config struct {
 	Address string
@@ -8,6 +8,6 @@ type Config struct {
 
 func GetConfig() Config {
 	return Config{
-		Address: os.Getenv("GREETER_SERVICE_ADDRESS"),
+		Address: "localhost:8085",
 	}
 }
