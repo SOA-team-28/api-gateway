@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+option go_package = "proto/user";
+
+import "google/api/annotations.proto";
+
+service UserService {
+    rpc GetUser(GetUserRequest) returns (GetUserResponse) {
+        option (google.api.http) = {
+            get: "/users/{id}"
+        };
+    }
+    rpc UpsertUser(UpsertUserRequest) returns (UpsertUserResponse) {
+        option (google.api.http) = {
+            post: "/users",
+            body: "*"
+        };
+    }
+    rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {
+        option (google.api.http) = {
+            delete: "/users/{id}"
+        };
+    }
+    rpc LoginUser(LoginUserRequest) returns (LoginUserResponse) {
+        option (google.api.http) = {
+            post: "/login",
+            body: "*"
+        };
+    }
+}
+
+message User {
+    int32 Id = 1;
+    string username=2;
+    string password=3;
+    enum UserRole {
+        Administrator = 0;
+        Author = 1;
+        Tourist = 2;
+    };
+    UserRole Role = 4;
+    bool IsActive = 5;
+    string Email = 6;
+    string VerificationToken=7;
+    bool IsVerified=8;
+}
+
+
+
+message GetUserRequest {
+    int32 id = 1;
+}
+
+message GetUserResponse {
+   User user = 1;
+}
+
+message UpsertUserRequest {
+    User user = 1;
+}
+
+message UpsertUserResponse {
+    User user = 1;
+}
+
+message DeleteUserRequest {
+    int32 id = 1;
+}
+
+message DeleteUserResponse {
+}
+message LoginUserRequest {
+    string username = 1;
+    string password = 2;
+}
+
+message LoginUserResponse {
+    string token = 1;
+}

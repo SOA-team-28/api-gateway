@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"example/gateway/config"
+	user "example/gateway/proto/stakeholders-service"
 	tour_service "example/gateway/proto/tour-service"
 	"log"
 	"net/http"
@@ -29,6 +30,16 @@ func main() {
 		log.Fatalln("Failed to dial server:", err)
 	}
 
+	stakeConn, err := grpc.DialContext(
+		context.Background(),
+		cfg.StakeholdersServiceAddress,
+		grpc.WithBlock(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Fatalln("Failed to dial user service:", err)
+	}
+
 	gwmux := runtime.NewServeMux()
 	// Register Greeter
 	client := tour_service.NewTourServiceClient(conn)
@@ -39,6 +50,13 @@ func main() {
 	)
 	if err != nil {
 		log.Fatalln("Failed to register gateway:", err)
+	}
+
+
+	userClient := user.NewUserServiceClient(stakeConn)
+	err = user.RegisterUserServiceHandlerClient(context.Background(), gwmux, userClient)
+	if err != nil {
+		log.Fatalln("Failed to register user service gateway:", err)
 	}
 
 	gwServer := &http.Server{

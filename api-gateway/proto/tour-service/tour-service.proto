@@ -9,13 +9,13 @@ option go_package = "proto/tour-service";
 service TourService {
     rpc CreateTour(TourDTO) returns (TourResponse) {
         option (google.api.http) = {
-            post: "/v1/tours"
+            post: "/tours"
             body: "*"
         };
     }
     rpc GetTour(TourRequest) returns (TourDTO) {
         option (google.api.http) = {
-            get: "/v1/tours/{id}"
+            get: "/tours/{id}"
         };
     }
 }

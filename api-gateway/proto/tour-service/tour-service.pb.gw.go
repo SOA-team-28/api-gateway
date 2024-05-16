@@ -123,7 +123,7 @@ func RegisterTourServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/tour.TourService/CreateTour", runtime.WithHTTPPathPattern("/v1/tours"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/tour.TourService/CreateTour", runtime.WithHTTPPathPattern("/tours"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -148,7 +148,7 @@ func RegisterTourServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/tour.TourService/GetTour", runtime.WithHTTPPathPattern("/v1/tours/{id}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/tour.TourService/GetTour", runtime.WithHTTPPathPattern("/tours/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -212,7 +212,7 @@ func RegisterTourServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/tour.TourService/CreateTour", runtime.WithHTTPPathPattern("/v1/tours"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/tour.TourService/CreateTour", runtime.WithHTTPPathPattern("/tours"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -234,7 +234,7 @@ func RegisterTourServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/tour.TourService/GetTour", runtime.WithHTTPPathPattern("/v1/tours/{id}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/tour.TourService/GetTour", runtime.WithHTTPPathPattern("/tours/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -254,9 +254,9 @@ func RegisterTourServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux
 }
 
 var (
-	pattern_TourService_CreateTour_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "tours"}, ""))
+	pattern_TourService_CreateTour_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0}, []string{"tours"}, ""))
 
-	pattern_TourService_GetTour_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"v1", "tours", "id"}, ""))
+	pattern_TourService_GetTour_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 1, 0, 4, 1, 5, 1}, []string{"tours", "id"}, ""))
 )
 
 var (
