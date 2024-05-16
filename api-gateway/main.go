@@ -3,15 +3,16 @@ package main
 import (
 	"context"
 	"example/gateway/config"
-	"example/gateway/proto/greeter"
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
+	tour_service "example/gateway/proto/tour-service"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
@@ -19,7 +20,7 @@ func main() {
 
 	conn, err := grpc.DialContext(
 		context.Background(),
-		cfg.GreeterServiceAddress,
+		cfg.ToursServiceAdress,
 		grpc.WithBlock(),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
@@ -30,8 +31,8 @@ func main() {
 
 	gwmux := runtime.NewServeMux()
 	// Register Greeter
-	client := greeter.NewGreeterServiceClient(conn)
-	err = greeter.RegisterGreeterServiceHandlerClient(
+	client := tour_service.NewTourServiceClient(conn)
+	err = tour_service.RegisterTourServiceHandlerClient(
 		context.Background(), 
 		gwmux,
 		client,

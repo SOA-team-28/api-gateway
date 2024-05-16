@@ -1,15 +1,17 @@
 package config
 
-import "os"
+
 
 type Config struct {
-	Address               string
-	GreeterServiceAddress string
+	Address                    string
+	ToursServiceAdress         string
+	StakeholdersServiceAddress string
 }
 
 func GetConfig() Config {
 	return Config{
-		GreeterServiceAddress: os.Getenv("GREETER_SERVICE_ADDRESS"),
-		Address:               os.Getenv("GATEWAY_ADDRESS"),
+		ToursServiceAdress:         "localhost:8081",
+		StakeholdersServiceAddress: "localhost:50051",
+		Address:                    "localhost:8000",
 	}
 }

@@ -1,0 +1,121 @@
+syntax = "proto3";
+
+package tour;
+
+import "google/api/annotations.proto";
+
+option go_package = "proto/tour-service";
+
+service TourService {
+    rpc CreateTour(TourDTO) returns (TourResponse) {
+        option (google.api.http) = {
+            post: "/v1/tours"
+            body: "*"
+        };
+    }
+    rpc GetTour(TourRequest) returns (TourDTO) {
+        option (google.api.http) = {
+            get: "/v1/tours/{id}"
+        };
+    }
+}
+
+message CheckpointDTO {
+    int32 id = 1;
+    int32 tour_id = 2;
+    int32 author_id = 3;
+    double longitude = 4;
+    double latitude = 5;
+    string name = 6;
+    string description = 7;
+    repeated string pictures = 8;
+    double required_time = 9;
+    string checkpoint_secret = 10;
+    int32 encounter_id = 11;
+    bool is_secret_prerequisite = 12;
+}
+
+message TourDTO {
+    int32 id = 1;
+    string name = 2;
+    string description = 3;
+    string demanding_level = 4;
+    double price = 5;
+    repeated string tags = 6;
+    int32 author_id = 7;
+    string status = 8;
+    repeated Equipment equipment = 9;
+    repeated CheckpointDTO checkpoints = 10;
+    repeated int32 tour_times = 11;
+    repeated int32 tour_ratings = 12;
+    bool closed = 13;
+}
+
+message MapObjectDTO {
+    int32 id = 1;
+    string name = 2;
+    string description = 3;
+    string picture_url = 4;
+    string category = 5;
+    double longitude = 6;
+    double latitude = 7;
+}
+
+message TourPreferenceDTO {
+    int32 id = 1;
+    int32 creator_id = 2;
+    string difficulty = 3;
+    int32 walk = 4;
+    int32 bike = 5;
+    int32 car = 6;
+    int32 boat = 7;
+    repeated string tags = 8;
+}
+
+message Equipment {
+    int32 id = 1;
+    string name = 2;
+    string description = 3;
+}
+
+message MapObject {
+    int32 id = 1;
+    string name = 2;
+    string description = 3;
+    string picture_url = 4;
+    MapObjectType category = 5;
+    double longitude = 6;
+    double latitude = 7;
+}
+
+message TourPreference {
+    int32 id = 1;
+    int32 creator_id = 2;
+    TourDifficulty difficulty = 3;
+    int32 walk = 4;
+    int32 bike = 5;
+    int32 car = 6;
+    int32 boat = 7;
+    repeated string tags = 8;
+}
+
+enum MapObjectType {
+    Other = 0;
+    Restaurant = 1;
+    WC = 2;
+    Parking = 3;
+}
+
+enum TourDifficulty {
+    Easy = 0;
+    Medium = 1;
+    Hard = 2;
+}
+
+message TourRequest {
+    int32 id = 1;
+}
+
+message TourResponse {
+    TourDTO tour = 1;
+}
