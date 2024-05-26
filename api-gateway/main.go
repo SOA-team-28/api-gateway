@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"example/gateway/config"
+	encounter_service "example/gateway/proto/encounter-service"
 	user "example/gateway/proto/stakeholders-service"
 	tour_service "example/gateway/proto/tour-service"
 	"log"
@@ -10,6 +11,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
@@ -19,19 +21,22 @@ import (
 func main() {
 	cfg := config.GetConfig()
 
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	conn, err := grpc.DialContext(
-		context.Background(),
+		ctx,
 		cfg.ToursServiceAdress,
 		grpc.WithBlock(),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
-
 	if err != nil {
-		log.Fatalln("Failed to dial server:", err)
+		log.Fatalln("Failed to dial tour service:", err)
 	}
+	defer conn.Close()
 
 	stakeConn, err := grpc.DialContext(
-		context.Background(),
+		ctx,
 		cfg.StakeholdersServiceAddress,
 		grpc.WithBlock(),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
@@ -39,24 +44,41 @@ func main() {
 	if err != nil {
 		log.Fatalln("Failed to dial user service:", err)
 	}
+	defer stakeConn.Close()
+
+	encounterConn, err := grpc.DialContext(
+		ctx,
+		cfg.EncounterServiceAdress,
+		grpc.WithBlock(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Fatalln("Failed to dial encounter service:", err)
+	}
+	defer encounterConn.Close()
 
 	gwmux := runtime.NewServeMux()
-	// Register Greeter
+
 	client := tour_service.NewTourServiceClient(conn)
 	err = tour_service.RegisterTourServiceHandlerClient(
-		context.Background(), 
+		context.Background(),
 		gwmux,
 		client,
 	)
 	if err != nil {
-		log.Fatalln("Failed to register gateway:", err)
+		log.Fatalln("Failed to register tour service gateway:", err)
 	}
-
 
 	userClient := user.NewUserServiceClient(stakeConn)
 	err = user.RegisterUserServiceHandlerClient(context.Background(), gwmux, userClient)
 	if err != nil {
 		log.Fatalln("Failed to register user service gateway:", err)
+	}
+
+	encounterClient := encounter_service.NewEncounterServiceClient(encounterConn)
+	err = encounter_service.RegisterEncounterServiceHandlerClient(context.Background(), gwmux, encounterClient)
+	if err != nil {
+		log.Fatalln("Failed to register encounter service gateway:", err)
 	}
 
 	gwServer := &http.Server{
@@ -70,8 +92,8 @@ func main() {
 		}
 	}()
 
-	stopCh := make(chan os.Signal)
-	signal.Notify(stopCh, syscall.SIGTERM)
+	stopCh := make(chan os.Signal, 1)
+	signal.Notify(stopCh, syscall.SIGTERM, syscall.SIGINT)
 
 	<-stopCh
 

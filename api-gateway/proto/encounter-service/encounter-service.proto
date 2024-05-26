@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+option go_package = "proto/encounter";
+
+import "google/api/annotations.proto";
+
+service EncounterService {
+    rpc GetEncounter(GetEncounterRequest) returns (GetEncounterResponse) {
+         option (google.api.http) = {
+            get: "/encounter/{id}"
+        };
+    }
+    rpc UpsertEncounter(UpsertEncounterRequest) returns (UpsertEncounterResponse) {
+        option (google.api.http) = {
+            post: "/encounter",
+            body: "*"
+        };
+    }
+    rpc DeleteEncounter(DeleteEncounterRequest) returns (DeleteEncounterResponse) {
+        option (google.api.http) = {
+            delete: "/encounter/{id}"
+        };
+    }
+}
+
+message Encounter {
+    int32 AuthorId = 1;
+    string Description=2;
+    int32 Id = 3;
+    int32 Latitude = 4;
+    int32 Longitude = 5;
+    string Name = 6;
+    string Status = 7;
+    string Type = 8;
+    int32 XP =9;
+    int32 LocationLongitude = 10;
+    int32 LocationLatitude = 11;
+    string Image = 12;
+    int32 Range =13;
+    int32 RequiredPeople = 14;
+    int32 CheckPointId = 15;
+}
+
+
+
+message GetEncounterRequest {
+    int32 id = 1;
+}
+
+message GetEncounterResponse {
+   Encounter encounter = 1;
+}
+
+message UpsertEncounterRequest {
+    Encounter encounter = 1;
+}
+
+message UpsertEncounterResponse {
+    Encounter encounter = 1;
+}
+
+message DeleteEncounterRequest {
+    int32 id = 1;
+}
+
+message DeleteEncounterResponse {
+}
