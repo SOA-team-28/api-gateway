@@ -4,6 +4,7 @@ import (
 	"context"
 	"example/gateway/config"
 	encounter_service "example/gateway/proto/encounter-service"
+	follower_service "example/gateway/proto/follower-service"
 	user "example/gateway/proto/stakeholders-service"
 	tour_service "example/gateway/proto/tour-service"
 	"log"
@@ -57,6 +58,17 @@ func main() {
 	}
 	defer encounterConn.Close()
 
+	followerConn, err := grpc.DialContext(
+		ctx,
+		cfg.FollowerServiceAddress,
+		grpc.WithBlock(),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
+	if err != nil {
+		log.Fatalln("Failed to dial follower service:", err)
+	}
+	defer encounterConn.Close()
+
 	gwmux := runtime.NewServeMux()
 
 	client := tour_service.NewTourServiceClient(conn)
@@ -79,6 +91,12 @@ func main() {
 	err = encounter_service.RegisterEncounterServiceHandlerClient(context.Background(), gwmux, encounterClient)
 	if err != nil {
 		log.Fatalln("Failed to register encounter service gateway:", err)
+	}
+
+	followerClient := follower_service.NewFollowerServiceClient(followerConn)
+	err = follower_service.RegisterFollowerServiceHandlerClient(context.Background(), gwmux, followerClient)
+	if err != nil {
+		log.Fatalln("Failed to register follower service gateway:", err)
 	}
 
 	gwServer := &http.Server{

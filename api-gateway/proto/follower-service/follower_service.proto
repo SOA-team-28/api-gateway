@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+
+
+option go_package = "proto/followers";
+
+
+
+service FollowerService {
+    rpc GetFollower(GetFollowerRequest) returns (GetFollowerResponse) {
+         option (google.api.http) = {
+            get: "/follower/{id}"
+        };
+    }
+    rpc UpsertFollower(UpsertFollowerRequest) returns (UpsertFollowerResponse) {
+        option (google.api.http) = {
+            post: "/follower",
+            body: "*"
+        };
+    }
+    rpc DeleteFollower(DeleteFollowerRequest) returns (DeleteFollowerResponse) {
+        option (google.api.http) = {
+            delete: "/follower/{id}"
+        };
+    }
+}
+
+message Follower {
+    int64 Id = 1;
+    repeated int32 Followers = 2;
+    repeated int32 Followable = 3;
+    repeated int32 Followed = 4;
+
+}
+
+
+
+message GetFollowerRequest {
+    int32 id = 1;
+}
+
+message GetFollowerResponse {
+    Follower follower = 1;
+}
+
+message UpsertFollowerRequest {
+    Follower follower = 1;
+}
+
+message UpsertFollowerResponse {
+    Follower follower = 1;
+}
+
+message DeleteFollowerRequest {
+    int32 id = 1;
+}
+
+message DeleteFollowerResponse {
+}
