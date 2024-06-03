@@ -17,6 +17,11 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+
+	"strings"
+
+	"github.com/dgrijalva/jwt-go"
+	"google.golang.org/grpc/metadata"
 )
 
 func main() {
@@ -101,7 +106,7 @@ func main() {
 
 	gwServer := &http.Server{
 		Addr:    cfg.Address,
-		Handler: gwmux,
+		Handler: jwtMiddleware(gwmux),
 	}
 
 	go func() {
@@ -118,4 +123,53 @@ func main() {
 	if err = gwServer.Close(); err != nil {
 		log.Fatalln("error while stopping server: ", err)
 	}
+}
+
+var jwtKey = []byte("secreet")
+
+func jwtMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Preskoči autorizaciju za login i registraciju
+		if r.URL.Path == "/login" || r.URL.Path == "/users" {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		// Uzimanje tokena iz Authorization header-a
+		authHeader := r.Header.Get("Authorization")
+		if authHeader == "" {
+			http.Error(w, "Nedostaje Authorization header", http.StatusUnauthorized)
+			return
+		}
+
+		log.Println("Authorization header:", authHeader)
+		tokenStr := strings.TrimPrefix(authHeader, "Bearer ")
+
+		// Parsiranje JWT tokena
+		// Parsiranje JWT tokena
+		claims := jwt.MapClaims{}
+		token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
+			return jwtKey, nil
+		})
+		if err != nil || !token.Valid {
+			http.Error(w, "Nevalidan token", http.StatusUnauthorized)
+			return
+		}
+
+		log.Println("claims", claims)
+
+		log.Println("claims", claims)
+		// Dodavanje korisničkog ID-ja u kontekst zahteva
+		ctx := context.WithValue(r.Context(), "userId", claims["userId"])
+
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+func grpcMetadataAnnotator(ctx context.Context, req *http.Request) metadata.MD {
+	userID, ok := ctx.Value("userId").(string)
+	if !ok {
+		return metadata.MD{}
+	}
+	return metadata.Pairs("userId", userID)
 }
