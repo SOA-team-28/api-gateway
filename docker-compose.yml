@@ -1,38 +1,84 @@
-version: "3.8"
+version: '3.9'
 
 services:
-
-  greeter_service:
-    image: greeter_service
-    container_name: greeter_service
-    hostname: greeter_service
-    build:
-      context: ./greeter-service/
-      dockerfile: Dockerfile
-    restart: always
-    environment:
-      GREETER_SERVICE_ADDRESS: ${GREETER_SERVICE_ADDRESS}
-    networks:
-      - network
-
   api_gateway:
-    image: api_gateway
+    build:
+      context: ./api-gateway
+      dockerfile: Dockerfile
     container_name: api_gateway
     hostname: api_gateway
-    build:
-      context: ./api-gateway/
-      dockerfile: Dockerfile
     restart: always
-    environment:
-      GREETER_SERVICE_ADDRESS: greeter_service:8000
-      GATEWAY_ADDRESS: ${GATEWAY_ADDRESS}
-    depends_on:
-      - greeter_service
     networks:
-      - network
+      - servers
     ports:
-      - "8000:8000"
+      - 8000:8000
+    depends_on:
+      - tours_server
+      - stakeholders_server
+
+  tours_database:
+    image: postgres
+    container_name: postgres_tours
+    restart: always
+    networks:
+      - servers
+    ports:
+      - 4000:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: super
+      POSTGRES_DB: tours
+    volumes:
+      - tours_database_data:/var/lib/postgresql/data
+
+  stakeholders_database:
+    image: postgres
+    container_name: postgres_stakeholders
+    restart: always
+    networks:
+      - servers
+    ports:
+      - 4001:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: super
+      POSTGRES_DB: stakeholders
+    volumes:
+      - stakeholders_database_data:/var/lib/postgresql/data
+
+  tours_server:
+    build:
+      context: ../tours/WebServerWithDB
+      dockerfile: Dockerfile
+    container_name: tours_container
+    restart: always
+    networks:
+      - servers
+    ports:
+      - 8081:8081
+    depends_on:
+      - tours_database
+
+  stakeholders_server:
+    build:
+      context: ../stakeholders/WebServerWithDB
+      dockerfile: Dockerfile
+    container_name: stakeholders_container
+    restart: always
+    networks:
+      - servers
+    ports:
+      - 50051:50051
+    depends_on:
+      - stakeholders_database
+
+volumes:
+  tours_database_data:
+    name: tours_database_volume
+  stakeholders_database_data:
+    name: stakeholders_database_volume
 
 networks:
-  network:
+  servers:
+    name: servers
     driver: bridge

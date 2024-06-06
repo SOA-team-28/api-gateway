@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"example/gateway/config"
-	encounter_service "example/gateway/proto/encounter-service"
 	user "example/gateway/proto/stakeholders-service"
 	tour_service "example/gateway/proto/tour-service"
 	"log"
@@ -51,16 +50,7 @@ func main() {
 	}
 	defer stakeConn.Close()
 
-	encounterConn, err := grpc.DialContext(
-		ctx,
-		cfg.EncounterServiceAdress,
-		grpc.WithBlock(),
-		grpc.WithTransportCredentials(insecure.NewCredentials()),
-	)
-	if err != nil {
-		log.Fatalln("Failed to dial encounter service:", err)
-	}
-	defer encounterConn.Close()
+
 
 	gwmux := runtime.NewServeMux()
 
@@ -80,11 +70,6 @@ func main() {
 		log.Fatalln("Failed to register user service gateway:", err)
 	}
 
-	encounterClient := encounter_service.NewEncounterServiceClient(encounterConn)
-	err = encounter_service.RegisterEncounterServiceHandlerClient(context.Background(), gwmux, encounterClient)
-	if err != nil {
-		log.Fatalln("Failed to register encounter service gateway:", err)
-	}
 
 	gwServer := &http.Server{
 		Addr:    cfg.Address,
