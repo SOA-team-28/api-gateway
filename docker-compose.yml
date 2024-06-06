@@ -1,5 +1,10 @@
 version: '3.9'
 
+x-logging: &fluent-bit
+  driver: fluentd
+  options:
+    fluentd-address: 172.19.0.5:24224
+
 services:
   api_gateway:
     build:
@@ -56,6 +61,7 @@ services:
       - servers
     ports:
       - 8081:8081
+    logging: *fluent-bit
     depends_on:
       - tours_database
 
@@ -69,6 +75,7 @@ services:
       - servers
     ports:
       - 50051:50051
+    logging: *fluent-bit
     depends_on:
       - stakeholders_database
 

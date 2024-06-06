@@ -1,0 +1,64 @@
+PS C:\Users\ivanm\Desktop\Docs\SOA\api-gateway> docker inspect network monitoring
+[
+    {
+        "Name": "monitoring",
+        "Id": "c15eb2c9aad557a4186403490b18a6bf346feb5d3c4f628fafaf57d94af09c5d",
+        "Created": "2024-06-06T16:57:34.158725168Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.19.0.0/16",
+                    "Gateway": "172.19.0.1"
+                }
+            ]
+        },
+        "Internal": false,
+        "Attachable": false,
+        "Ingress": false,
+        "ConfigFrom": {
+            "Network": ""
+        },
+        "ConfigOnly": false,
+        "Containers": {
+            "0086b7526a3bf1baea71b3e9887b54dbde117b1f030965788a9da64c6e5b2c0c": {
+                "Name": "monitoring-loki-1",
+                "EndpointID": "09ccd0a139d5c4c9140e24052401bfe1c0b40233550c887e65e763219d3db78d",
+                "MacAddress": "02:42:ac:13:00:02",
+                "IPv4Address": "172.19.0.2/16",
+                "IPv6Address": ""
+            },
+            "36f4290be93d344f911fd99f73994ae70956e942b6c7611c96ed8a4e846b0e34": {
+                "Name": "monitoring-grafana-1",
+                "EndpointID": "a8357bf065ae62f3a46c312be24a506b30f0331b6b8e66a9d759f340afba4598",
+                "MacAddress": "02:42:ac:13:00:04",
+                "IPv4Address": "172.19.0.4/16",
+                "IPv6Address": ""
+            },
+            "6d426ea0a2f62e9674cd49241716c17983f82f7749408758dd59abb4a491e953": {
+                "Name": "monitoring-fluent-bit-1",
+                "EndpointID": "af0922766a9420f36fea6bf659756aebde189756fc51dc61483af03f161f2d5b",
+                "MacAddress": "02:42:ac:13:00:05",
+                "IPv4Address": "172.19.0.5/16",
+                "IPv6Address": ""
+            },
+            "ec5754414d18a5034f74bc6c4448c6162cb24d1439c5e9b5f95821a056a82e7c": {
+                "Name": "monitoring-renderer-1",
+                "EndpointID": "b765c873283447466fd2bbbca3a404b708e430457ae08b0a9377b59ac3eea8a0",
+                "MacAddress": "02:42:ac:13:00:03",
+                "IPv4Address": "172.19.0.3/16",
+                "IPv6Address": ""
+            }
+        },
+        "Options": {},
+        "Labels": {
+            "com.docker.compose.network": "monitoring",
+            "com.docker.compose.project": "monitoring",
+            "com.docker.compose.version": "2.26.1"
+        }
+    }
+]
